@@ -1,0 +1,67 @@
+import React from 'react'
+import axios from "axios";
+import {useNavigate} from 'react-router-dom'
+
+export const Login = ({SetUser}) => {
+    const navigate = useNavigate();
+    var currentDomain = window.location.hostname;
+    var url = 'http://localhost:5000'
+  
+    const handleSubmit = async (event) => {
+      event.preventDefault();
+      const Data = new FormData(event.currentTarget);
+      const userData = {
+        username: Data.get('username'),
+        password: Data.get('password'),
+      };
+  
+      if(userData.username=='' && userData.value=='') {alert(`username and password can't be empty`); return;}
+      if(userData.username=='') {alert(`username can't be empty`); return;}
+      if(userData.password=='') {alert(`password can't be empty`); return;}
+      var hash = CryptoJS.SHA256(userData.password+currentDomain);
+      var hashString = hash.toString();
+      userData.password = hashString;
+      console.log(userData);
+  
+      const {data} = await axios.post(`${url}/login`,userData);
+      if(data.status==201) { SetUser(data.user.user.username);navigate('/main');return}
+      SetUser(data.user.user.username)
+      if(data.status==200) {navigate('/main')}
+      console.log(data," data");
+  
+    }
+  return (
+    <div className="main-block">
+      <h1>Login</h1>
+      <form onSubmit={handleSubmit}>
+        <hr />
+        <label id="icon" htmlFor="name">
+          <i className="fas fa-user"></i>
+        </label>
+        <input
+          className="username"
+          type="text"
+          name="username"
+          id="name"
+          placeholder="UserName"
+          required
+        />
+        <label id="icon" htmlFor="name">
+          <i className="fas fa-unlock-alt"></i>
+        </label>
+        <input
+          className="password"
+          type="password"
+          name="password"
+          id="password"
+          placeholder="Password"
+          required
+        />
+        <hr />
+        <div className="btn-block">
+          <button  className="submit">Submit</button>
+        </div>
+      </form>
+    </div>
+  )
+}
