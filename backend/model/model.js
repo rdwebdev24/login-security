@@ -1,5 +1,5 @@
 const mongoose =  require('mongoose');
-// todo collection //
+
 const Schema = mongoose.Schema; 
 
 const User = new Schema({

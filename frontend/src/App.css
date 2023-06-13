@@ -132,3 +132,6 @@ button {
 button:hover {
   background: #26a9e0;
 }
+.confirmpassword{
+  margin-top: 0 !important;
+}
