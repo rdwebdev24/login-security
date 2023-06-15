@@ -12,45 +12,44 @@ app.use(cors());
 app.use(bodyParser.json());
 connectDB();
 
-let user = [
-  {
-    username: "rohit123",
-    password: "rohit@123",
-  },
-];
-
 app.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-  console.log({username,password});
+  const { username, password , ClientKey, email} = req.body;
+  const SecretKey = CryptoJS.SHA256(ClientKey+process.env.ServerKey).toString();
+  
+  console.log({username,password,ClientKey}, ' login');
   try {
-    const oldUser = await LoginUser.find({ "user.username": username });
+    const oldUser = await LoginUser.find({ "email": email });
     console.log({oldUser});
-
-    if (oldUser.length != 0)
-      return res.send({ msg: "login successfully",status:201, user: oldUser[0] });
+    
+    if (oldUser.length != 0){
+      const encryptedPassword = oldUser[0].password;
+      const decryptedPasswordBytes = CryptoJS.AES.decrypt(encryptedPassword, SecretKey);
+      const decryptedPassword = decryptedPasswordBytes.toString(CryptoJS.enc.Utf8);
+      if(decryptedPassword==password) return res.send({ msg: "login successfully",status:201, user: oldUser[0] });
+    }
     
     return res.send({msg:"user dosen't exist",status:400});
-  } 
+  }
   catch (error) {
     console.log(error.Message);
   }
 });
 app.post("/register", async (req, res) => {
   const { username, password , ClientKey , email} = req.body;
-  console.log({username,password,ClientKey,email});
+  console.log({username,password,ClientKey,email}, ' register');
   const SecretKey = CryptoJS.SHA256(ClientKey+process.env.ServerKey).toString();
   const encryptedUsername = CryptoJS.AES.encrypt(username, SecretKey).toString();
   const encryptedPassword = CryptoJS.AES.encrypt(password, SecretKey).toString();
   console.log({encryptedUsername,encryptedPassword});
   try {
-    const oldUser = await LoginUser.find({ "user.email": email });
+    const oldUser = await LoginUser.find({ "email": email });
     console.log({oldUser});
 
     if (oldUser.length != 0)
       return res.send({ msg: "user already exist please login",status:201, user: oldUser[0] });
 
     const userData = await LoginUser.create({
-      user:{ email , username:encryptedUsername, password:encryptedPassword }
+       email , username:encryptedUsername, password:encryptedPassword 
     });
     return res.send({ msg: "register successfully",status:200, user:userData });
   } 

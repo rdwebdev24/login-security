@@ -17,7 +17,7 @@ export const Main = ({user}) => {
   },[])
   return (
     <div>
-        <h1>Login successfull</h1>
+        <h1>welcome to login security <br/> Homepage</h1>
         <button onClick={logout}>Logout</button>
     </div>
   )
