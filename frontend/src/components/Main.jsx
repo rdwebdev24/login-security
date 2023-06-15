@@ -12,14 +12,12 @@ export const Main = ({user}) => {
   }
   useEffect(()=>{
     const username = localStorage.getItem('ls-username');
-    console.log(username," usernmae");
     if(!username) {alert('session expired');navigate('/login')}
     
   },[])
   return (
     <div>
-        <h1>Welcome to Login security</h1>
-        <h1>{user}</h1>
+        <h1>Login successfull</h1>
         <button onClick={logout}>Logout</button>
     </div>
   )

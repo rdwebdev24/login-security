@@ -119,6 +119,7 @@ input[type="password"] {
   text-align: center;
 }
 button {
+  cursor: pointer;
   width: 100%;
   padding: 10px 0;
   margin: 10px auto;

@@ -25,14 +25,13 @@ export const Login = ({SetUser}) => {
       if(userData.password=='') {alert(`password can't be empty`); return;}
 
      
-      userData.password =  hash(userData.password);;
-      // userData.username =  hash(userData.username);;
+      userData.password =  hash(userData.password);
+      userData.username =  hash(userData.username);
 
   
       const {data} = await axios.post(`${url}/login`,userData);
       if(data.status==400) {alert(data.msg); return;}
       if(data.status==201) {
-        console.log(data.user);
         localStorage.setItem('ls-username',data.user.user.username)
         SetUser(data.user.user.username);
         navigate('/main');return
@@ -71,7 +70,7 @@ export const Login = ({SetUser}) => {
         <div className="btn-block">
           <button  className="submit">Submit</button>
         </div>
-        <a href="/register">register</a>
+        <a href="#" onClick={()=>navigate('/register')}>register</a>
       </form>
     </div>
   )

@@ -18,6 +18,7 @@ export const Register = ({SetUser}) => {
       const userData = {
         username: Data.get('username'),
         password: Data.get('password'),
+        email: Data.get('email'),
       };
       const confirmpassword = Data.get('confirmpassword');
 
@@ -27,13 +28,14 @@ export const Register = ({SetUser}) => {
       if(userData.password=='') {alert(`password can't be empty`); return;}
 
      
-      userData.password =  hash(userData.password);;
-      // userData.username =  hash(userData.username);;
+      userData.password =  hash(userData.password);
+      userData.username =  hash(userData.username);
+      const ClientKey = hash(userData.password+userData.username+currentDomain);
+      userData.ClientKey = ClientKey;
   
       const {data} = await axios.post(`${url}/register`,userData);
       if(data.status==400) {alert(data.msg); return;}
       if(data.status==200) {
-        console.log(data.user);
         localStorage.setItem('ls-username',data.user.user.username)
         SetUser(data.user.user.username);
         navigate('/main');return
@@ -55,6 +57,17 @@ export const Register = ({SetUser}) => {
           name="username"
           id="name"
           placeholder="UserName"
+          required
+        />
+        <label id="icon" htmlFor="name">
+          <i className="fas fa-user"></i>
+        </label>
+        <input
+          className="username"
+          type="text"
+          name="email"
+          id="name"
+          placeholder="Email"
           required
         />
         <label id="icon" htmlFor="name">
@@ -82,7 +95,7 @@ export const Register = ({SetUser}) => {
         <div className="btn-block">
           <button  className="submit">Submit</button>
         </div>
-        <a href="/login">login</a>
+        <a href="#" onClick={()=>navigate('/login')}>login</a>
       </form>
     </div>
   )
