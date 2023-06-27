@@ -1,7 +1,19 @@
+/* 
+Objectives: 
+Input:
+Expected output:
+
+Example 
+
+*/
+
+
 import React, { useEffect, useState } from 'react'
 import axios from "axios";
 import {useNavigate} from 'react-router-dom'
 import { Loader } from './Loader';
+import {shuffle} from '../utils/shuffle'
+import checkPassword from  '../utils/passCheck'
 
 export const Register = ({SetUser}) => {
     const navigate = useNavigate();
@@ -14,10 +26,13 @@ export const Register = ({SetUser}) => {
     var url = 'http://localhost:5000'
   
     const hash = (value) => {
-      var hash = CryptoJS.SHA256(value+currentDomain);
+      var hash = CryptoJS.SHA256(value);
       var hashString = hash.toString();
       return hashString;
     }
+
+    console.log(shuffle("rohit","123","dhakad",1234)," feotnend");
+
     const validatePassword = (password) => {
       const specialCharPattern = /[!@#$%^&*(),._?":;{}|<\/>=+-]/;
       const capitalLetterPattern = /[A-Z]/;
@@ -32,7 +47,7 @@ export const Register = ({SetUser}) => {
       setPassword(e.target.value);
       const isvalidpassword = validatePassword(password)
       console.log(isvalidpassword);
-      if(!isvalidpassword) setPasswordAlert('password should be minimum of 8 characters contain one capital letter one special')
+      if(!isvalidpassword) setPasswordAlert('password should be minimum of 10 characters contain 2 capital letter 2 special and 2 number')
       else setPasswordAlert('')
     }
     const HandleConfirmPassword = (e) => {
@@ -48,17 +63,53 @@ export const Register = ({SetUser}) => {
         password: Data.get('password'),
         email: Data.get('email'),
       };
-      const confirmpassword = Data.get('confirmpassword');
 
+      if(!checkPassword(userData.password)) {alert('password is weak');return}
+
+      const confirmpassword = Data.get('confirmpassword');
+      
       if(userData.password!=confirmpassword){alert(`password dosen't match`); return;};
       if(userData.username=='' && userData.value=='') {alert(`username and password can't be empty`); return;}
       if(userData.username=='') {alert(`username can't be empty`); return;}
       if(userData.password=='') {alert(`password can't be empty`); return;}
-     
-      userData.password =  hash(userData.password);
-      userData.username =  hash(userData.username);
-      const ClientKey = hash(userData.password+userData.username+currentDomain);
-      userData.ClientKey = ClientKey;
+
+      let u = userData.username;
+      let p = userData.password;
+      let seed = 198899;
+
+      console.log({u,p,email:userData.email,currentDomain});
+
+      // console.log(userData," userdata");
+
+      const hu = hash(u);
+      const hp = hash(p);
+      const hd = hash(currentDomain);
+      
+
+      const Su = shuffle(hu,hd,p,seed);
+      const Sp = shuffle(hp,hd,u,seed);
+      const Sk = shuffle(hu,hp+hd,p+u,seed);
+
+      console.log({Su,Sp,Sk});
+
+      const Hu = hash(Su);
+      const Hp = hash(Sp);
+      const Hk = hash(Sk);
+
+      console.log({Hu,Hp,Hk});
+
+
+      userData.username = Hu;
+      userData.password = Hp;
+      userData.ClientKey = Hk;
+
+      // console.log(userData);
+
+
+//ripon@cse.nits.ac.in
+//User@1991
+//Pass@1975_P
+
       setLoading(true);
       const {data} = await axios.post(`${url}/register`,userData);
       setLoading(false);

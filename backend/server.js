@@ -4,8 +4,12 @@ const connectDB = require("./config/db");
 const bodyParser = require("body-parser");
 const { LoginUser } = require("./model/model");
 const CryptoJS = require('crypto-js');
+const shuffle = require('./config/shuffle');
+
 require("dotenv").config();
 const PORT = 5000;
+
+console.log(shuffle("rohit","123","dhakad",1234));
 
 const app = express();
 app.use(cors());
@@ -14,17 +18,21 @@ connectDB();
 
 app.post("/login", async (req, res) => {
   const { username, password , ClientKey, email} = req.body;
-  const SecretKey = CryptoJS.SHA256(ClientKey+process.env.ServerKey).toString();
-  
+
+  const Hw = CryptoJS.SHA256(process.env.ServerKey).toString();
+  const SecretKey = shuffle(ClientKey,Hw,process.env.ServerKey,198899);
+  // const decryptedPassword = CryptoJS.AES.encrypt(password, SecretKey).toString();
   console.log({username,password,ClientKey}, ' login');
   try {
     const oldUser = await LoginUser.find({ "email": email });
     console.log({oldUser});
     
     if (oldUser.length != 0){
+      console.log('afdsfs');
       const encryptedPassword = oldUser[0].password;
       const decryptedPasswordBytes = CryptoJS.AES.decrypt(encryptedPassword, SecretKey);
       const decryptedPassword = decryptedPasswordBytes.toString(CryptoJS.enc.Utf8);
+      console.log({decryptedPassword,encryptedPassword,decryptedPasswordBytes});
       if(decryptedPassword==password) return res.send({ msg: "login successfully",status:201, user: oldUser[0] });
     }
     
@@ -37,7 +45,11 @@ app.post("/login", async (req, res) => {
 app.post("/register", async (req, res) => {
   const { username, password , ClientKey , email} = req.body;
   console.log({username,password,ClientKey,email}, ' register');
-  const SecretKey = CryptoJS.SHA256(ClientKey+process.env.ServerKey).toString();
+
+  const Hw = CryptoJS.SHA256(process.env.ServerKey).toString();
+
+  const SecretKey = shuffle(ClientKey,Hw,process.env.ServerKey,198899);
+
   const encryptedUsername = CryptoJS.AES.encrypt(username, SecretKey).toString();
   const encryptedPassword = CryptoJS.AES.encrypt(password, SecretKey).toString();
   console.log({encryptedUsername,encryptedPassword});

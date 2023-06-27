@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import axios from "axios";
 import {useNavigate} from 'react-router-dom'
 import { Loader } from './Loader';
+import { shuffle } from '../utils/shuffle';
 
 export const Login = ({SetUser}) => {
     const navigate = useNavigate();
@@ -10,7 +11,7 @@ export const Login = ({SetUser}) => {
     var url = 'http://localhost:5000'
   
     const hash = (value) => {
-      var hash = CryptoJS.SHA256(value+currentDomain);
+      var hash = CryptoJS.SHA256(value);
       var hashString = hash.toString();
       return hashString;
     }
@@ -22,16 +23,42 @@ export const Login = ({SetUser}) => {
         username: Data.get('username'),
         password: Data.get('password'),
       };
+
+      console.log(userData," userdata");
   
       if(userData.username=='' && userData.password=='') {alert(`username and password can't be empty`); return;}
       if(userData.username=='') {alert(`username can't be empty`); return;}
       if(userData.password=='') {alert(`password can't be empty`); return;}
 
-     
-      userData.password =  hash(userData.password);
-      userData.username =  hash(userData.username);
-      const ClientKey = hash(userData.password+userData.username+currentDomain);
-      userData.ClientKey = ClientKey;
+      let u = userData.username;
+      let p = userData.password;
+      let seed = 198899;
+
+      console.log({u,p,email:userData.email,currentDomain});
+
+      const hu = hash(u);
+      const hp = hash(p);
+      const hd = hash(currentDomain);
+
+      const Su = shuffle(hu,hd,p,seed);
+      const Sp = shuffle(hp,hd,u,seed);
+      const Sk = shuffle(hu,hp+hd,p+u,seed);
+
+      console.log({Su,Sp,Sk});
+
+      const Hu = hash(Su);
+      const Hp = hash(Sp);
+      const Hk = hash(Sk);
+
+      console.log({Hu,Hp,Hk});
+
+      userData.username = Hu;
+      userData.password = Hp;
+      userData.ClientKey = Hk;
+
+
+      // console.log(userData);
+    
       setLoading(true);
       const {data} = await axios.post(`${url}/login`,userData);
       setLoading(false);
