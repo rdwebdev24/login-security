@@ -81,3 +81,7 @@ export const shuffle = (str1, str2, ctx, seed) => {
 
   return mix;
 };
+
+
+let a = shuffle("rohit","dhakad","12345",1000);
+console.log(a);

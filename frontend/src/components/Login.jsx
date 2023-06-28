@@ -83,7 +83,7 @@ export const Login = ({SetUser}) => {
           className="username"
           type="text"
           name="email"
-          id="name"
+          id="email"
           placeholder="Email"
           required
         />
