@@ -1,6 +1,6 @@
 import { murmur2 } from "murmurhash-js";
 
-function getSeedValue(key, l, seed, t) {
+function getSeedValue(key,seed, t) {
   for (let i = 0; i < t; i++) {
     seed = murmur2(key, seed);
   }
@@ -24,31 +24,31 @@ export const shuffle = (str1, str2, ctx, seed) => {
   let ll3 = l3;
   
 
-  seed = getSeedValue(ctx, l3, seed, t);
+  seed = getSeedValue(ctx, seed, t);
   t = (seed % d) + 16;
-  seed = getSeedValue(str1, l1, seed, t);
+  seed = getSeedValue(str1, seed, t);
   t = (seed % d) + 16;
-  seed = getSeedValue(str2, l2, seed, t);
+  seed = getSeedValue(str2, seed, t);
   t = (seed % d) + 16;
 
   while (ll1 !== 0 && ll2 !== 0) {
     if ((seed & 1) === 0) {
-      seed = getSeedValue(str2, l2, seed, t);
+      seed = getSeedValue(str2, seed, t);
       t = (seed % d) + 16;
-      seed = getSeedValue(str1, l1, seed, t);
+      seed = getSeedValue(str1, seed, t);
       t = (seed % d) + 16;
-      seed = getSeedValue(ctx, l3, seed, t);
+      seed = getSeedValue(ctx, seed, t);
       t = (seed % d) + 16;
       k = seed % ll1;
       mix += s1[k];
       s1 = s1.slice(0, k) + s1.slice(k + 1);
       ll1--;
     } else {
-      seed = getSeedValue(str2, l2, seed, t);
+      seed = getSeedValue(str2, seed, t);
       t = (seed % d) + 16;
-      seed = getSeedValue(str1, l1, seed, t);
+      seed = getSeedValue(str1, seed, t);
       t = (seed % d) + 16;
-      seed = getSeedValue(ctx, l3, seed, t);
+      seed = getSeedValue(ctx, seed, t);
       t = (seed % d) + 16;
       k = seed % ll2;
       mix += s2[k];
@@ -58,22 +58,22 @@ export const shuffle = (str1, str2, ctx, seed) => {
   }
 
   for (k = 0; k < ll1; k++) {
-    seed = getSeedValue(str2, l2, seed, t);
+    seed = getSeedValue(str2, seed, t);
     t = (seed % d) + 16;
-    seed = getSeedValue(str1, l1, seed, t);
+    seed = getSeedValue(str1, seed, t);
     t = (seed % d) + 16;
-    seed = getSeedValue(ctx, l3, seed, t);
+    seed = getSeedValue(ctx, seed, t);
     t = (seed % d) + 16;
     const pos = seed % mix.length;
     mix = mix.substring(0, pos) + s1[k] + mix.substring(pos);
   }
 
   for (k = 0; k < ll2; k++) {
-    seed = getSeedValue(str2, l2, seed, t);
+    seed = getSeedValue(str2, seed, t);
     t = (seed % d) + 16;
-    seed = getSeedValue(str1, l1, seed, t);
+    seed = getSeedValue(str1, seed, t);
     t = (seed % d) + 16;
-    seed = getSeedValue(ctx, l3, seed, t);
+    seed = getSeedValue(ctx, seed, t);
     t = (seed % d) + 16;
     const pos = seed % mix.length;
     mix = mix.substring(0, pos) + s2[k] + mix.substring(pos);
@@ -81,7 +81,3 @@ export const shuffle = (str1, str2, ctx, seed) => {
 
   return mix;
 };
-
-
-let a = shuffle("rohit","dhakad","12345",1000);
-console.log(a);

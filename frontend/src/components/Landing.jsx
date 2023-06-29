@@ -1,7 +1,7 @@
 import React from "react";
 import {useNavigate} from 'react-router-dom'
 
-
+// Landing page component
 export const Landing = () => {
     const navigate = useNavigate();
   return (

@@ -35,7 +35,7 @@ hr {
   opacity: 0.3;
 }
 .main-block {
-  max-width: 340px;
+  max-width: 400px;
   padding: 10px 0;
   margin: auto;
   border-radius: 5px;
@@ -103,9 +103,11 @@ input[type="password"] {
   box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.09);
   background: #fff;
 }
-input[type="password"] {
+
+#password, #confirmpassword {
   margin-bottom: 15px;
 }
+
 #icon {
   display: inline-block;
   padding: 9.3px 15px;

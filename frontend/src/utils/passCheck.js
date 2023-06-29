@@ -1,3 +1,5 @@
+
+// Exporting the checkpassword function 
 export default function checkPassword(password) {
     const minLength = 10;
     const minUppercase = 2;
