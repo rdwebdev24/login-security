@@ -22,6 +22,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Loader } from "./Loader";
 import { shuffle } from "../utils/shuffle";
+import checkPassword from "../utils/passCheck";
 
 // exporting the login component to the App component
 export const Login = ({ SetUser }) => {
@@ -54,6 +55,12 @@ export const Login = ({ SetUser }) => {
       username: Data.get("username"),
       password: Data.get("password"),
     };
+
+    // Checking the password strength
+    if (!checkPassword(userData.password)) {
+      alert("password is weak should be of length 10 having minimum 2 capital letters , 2 numbers , 2 special characters");
+      return;
+    }
 
     // Checking if any field is empty or not
     if (userData.username == "" && userData.password == "") {

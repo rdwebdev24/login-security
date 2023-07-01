@@ -38,7 +38,6 @@ connectDB();
 app.post("/login", async (req, res) => {
   // Getting the username , password , email and client Key //
   const { username, password , ClientKey, email} = req.body;
-
   // hasing the server key //
   const Hw = CryptoJS.SHA256(process.env.ServerKey).toString();
 
@@ -56,7 +55,6 @@ app.post("/login", async (req, res) => {
   try {
     // checking for old user in Database //
     const oldUser = await LoginUser.find({ "email": email });
-
     if (oldUser.length != 0){
       const encryptedPassword = oldUser[0].password;
       // Decrypting the password using the Secret key //
@@ -67,16 +65,19 @@ app.post("/login", async (req, res) => {
       // Decrypting the Username using the Secret key //
       const decryptedUsernameBytes = CryptoJS.AES.decrypt(encryptedUsernmae, SecretKey);
       const decryptedUsername = decryptedUsernameBytes.toString(CryptoJS.enc.Utf8);
-
       // checking if the decrypted password and Username match the original one //
       if(decryptedPassword==password && decryptedUsername==username) return res.send({ msg: "login successfully",status:200, user: oldUser[0] });
     }
     // sending the response to the client //
     return res.send({msg:"user dosen't exist",status:400});
   }
-  catch (error) {
-    console.log(error.Message);
+  catch (error) { console.log(error.Message);}
+
+  finally {
+    if (typeof global.gc === 'function') global.gc() 
+    else console.log('Garbage collection unavailable. Use --expose-gc when launching Node.js.')
   }
+
 });
 
 // REGISTER ROUTE //
@@ -117,10 +118,14 @@ app.post("/register", async (req, res) => {
     // sending the response to the client side //
     return res.send({ msg: "register successfully",status:200, user:userData });
   } 
-  catch (error) {
-    console.log(error.Message);
+  
+  catch (error) { console.log(error.Message);}
+
+  finally{
+    if (typeof global.gc === 'function') global.gc()
+    else console.log('Garbage collection unavailable. Use --expose-gc when launching Node.js.')
   }
-  res.send({msg:"success"})
+
 });
 
 app.get("/", (req, res) => {
