@@ -21,6 +21,7 @@ const shuffle = require('./config/shuffle');
 const murmur = require('murmurhash-js');
 const argon2 = require('argon2');
 const hashSecretKey = require('./utils/argonHash')
+const assignWhiteSpace = require('./utils/assignWhiteSpacce')
 require("dotenv").config();
 
 
@@ -37,16 +38,16 @@ connectDB();
 // LOGIN ROUTE //
 app.post("/login", async (req, res) => {
   // Getting the username , password , email and client Key //
-  const { username, password , ClientKey, email} = req.body;
+  var { username, password , ClientKey, email} = req.body;
   // hasing the server key //
-  const Hw = CryptoJS.SHA256(process.env.ServerKey).toString();
+  var Hw = CryptoJS.SHA256(process.env.ServerKey).toString();
 
   // shuffling the client key with the hashed server key in ctx of server key //
   var shuffledKey = shuffle(ClientKey,Hw,process.env.ServerKey,198899);
 
   // Creating the secret key by hashing the shuffled key //
   var SecretKey = CryptoJS.SHA512(shuffledKey).toString(); 
-  const n = murmur.murmur2(process.env.ServerKey,71287)%2087+1000;
+  var n = murmur.murmur2(process.env.ServerKey,71287)%2087+1000;
   for (let i=0;i<n;i++){SecretKey = CryptoJS.SHA512(SecretKey).toString();}
  
   // hashing the Secret key using Argon2i algorithm //
@@ -72,10 +73,14 @@ app.post("/login", async (req, res) => {
     return res.send({msg:"user dosen't exist",status:400});
   }
   catch (error) { console.log(error.Message);}
-
+  
   finally {
-    if (typeof global.gc === 'function') global.gc() 
-    else console.log('Garbage collection unavailable. Use --expose-gc when launching Node.js.')
+    // Assigning all variables with empty string of same length ( Ex : "hello" --> "    " )
+    SecretKey = assignWhiteSpace(SecretKey);
+    ClientKey = assignWhiteSpace(ClientKey);
+    shuffledKey =assignWhiteSpace(shuffledKey);
+    Hw =assignWhiteSpace(Hw);
+    n = null;
   }
 
 });
@@ -83,25 +88,25 @@ app.post("/login", async (req, res) => {
 // REGISTER ROUTE //
 app.post("/register", async (req, res) => {
   // getting the username , password , email and client key //
-  const { username, password , ClientKey , email} = req.body;
+  var { username, password , ClientKey , email} = req.body;
 
   // hashing the server key //
-  const Hw = CryptoJS.SHA256(process.env.ServerKey).toString();
+  var Hw = CryptoJS.SHA256(process.env.ServerKey).toString();
 
   // Shuffling the client key with hashed server key in ctx of server key with some seed value 
   var shuffledKey = shuffle(ClientKey,Hw,process.env.ServerKey,198899);
 
   // Again hasing the shufled key using SHA256 and murmur function //
   var SecretKey = CryptoJS.SHA512(shuffledKey).toString(); 
-  const n = murmur.murmur2(process.env.ServerKey,71287)%2087+1000; 
+  var n = murmur.murmur2(process.env.ServerKey,71287)%2087+1000; 
   for (let i=0;i<n;i++){SecretKey = CryptoJS.SHA512(SecretKey).toString();}
 
   // hashing the Secret key using Argon2i algorithm //
   SecretKey = await hashSecretKey(SecretKey,ClientKey);
   
   // encrypting the username and password using the secret key //
-  const encryptedUsername = CryptoJS.AES.encrypt(username, SecretKey).toString();
-  const encryptedPassword = CryptoJS.AES.encrypt(password, SecretKey).toString();
+  var encryptedUsername = CryptoJS.AES.encrypt(username, SecretKey).toString();
+  var encryptedPassword = CryptoJS.AES.encrypt(password, SecretKey).toString();
   try {
     // checking for the old user using email //
     const oldUser = await LoginUser.find({ "email": email });
@@ -122,10 +127,15 @@ app.post("/register", async (req, res) => {
   catch (error) { console.log(error.Message);}
 
   finally{
-    if (typeof global.gc === 'function') global.gc()
-    else console.log('Garbage collection unavailable. Use --expose-gc when launching Node.js.')
+     // Assigning all variables with empty string of same length ( Ex : "hello" --> "    " )
+    encryptedPassword = assignWhiteSpace(encryptedPassword);
+    encryptedUsername = assignWhiteSpace(encryptedUsername);
+    SecretKey = assignWhiteSpace(SecretKey);
+    ClientKey = assignWhiteSpace(ClientKey);
+    shuffledKey = assignWhiteSpace(shuffledKey);
+    Hw =assignWhiteSpace(Hw);
+    n = null;
   }
-
 });
 
 app.get("/", (req, res) => {
