@@ -23,6 +23,7 @@ import { useNavigate } from "react-router-dom";
 import { Loader } from "./Loader";
 import { shuffle } from "../utils/shuffle";
 import checkPassword from "../utils/passCheck";
+import checkUsername from "../utils/userCheck";
 
 // exporting the register component to the App component
 export const Register = ({ SetUser }) => {
@@ -61,15 +62,13 @@ export const Register = ({ SetUser }) => {
 
     // Checking the password strength
     if (!checkPassword(userData.password)) {
-      alert(
-        "password is weak should be of length 10 having minimum 2 capital letters , 2 numbers , 2 special characters"
-      );
+      alert("password is weak should be of length 10 having minimum 2 capital letters , 2 numbers , 2 special characters");
       return;
     }
 
     // checking  the username length ( min 9 character )
-    if (userData.username.length < 8) {
-      alert("username should be of length 8");
+    if (!checkUsername(userData.username)) {
+      alert("username is weak should be of length 8 having minimum 1 UpperCase letters , 1 lowerCase letters , 1 numbers , 1 special characters");
       return;
     }
 

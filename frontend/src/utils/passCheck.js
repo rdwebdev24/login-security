@@ -1,3 +1,14 @@
+/********************************** 
+function that check the strength of the password
+
+input : ROhit300@@ 
+output : true ( strong )
+
+input : Rohit30@ 
+output : false ( weak )
+
+**********************************/
+
 
 // Exporting the checkpassword function 
 export default function checkPassword(password) {

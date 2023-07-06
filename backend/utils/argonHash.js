@@ -22,7 +22,9 @@ async function hashSecretKey(SecretKey, ClientKey) {
     
     // Generating salt using client key and Secret key 
     const halfClientKey = ClientKey.slice(0, 32);
-    var Salt = CryptoJS.SHA512(process.env.ServerKey + halfClientKey).toString();
+    const sw = shuffle(halfClientKey,SecretKey,process.env.ServerKey,198899);
+	
+    var Salt = CryptoJS.SHA512(sw).toString();
     const n = (murmur.murmur2(process.env.ServerKey, 71287) % 2087) + 1000;
 
     // Hashing the Salt using Crypto SHA512 //
